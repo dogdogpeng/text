@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title> </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <style type="text/css">
+        .page {
+            color: #ffffff;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-image: url('IMG123.jpg');
+            position: relative; /* 确保天气容器可以定位 */
+            min-height: 100vh; /* 让页面至少占满整个视口高度 */
+        }
+
+        #apm,
+        #date {
+            font-weight: 800;
+        }
+
+        .weather-wrapper {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around; /* 让天气信息横向均匀分布 */
+            flex-wrap: wrap; /* 当空间不足时允许换行 */
+        }
+
+        .weather-day {
+            flex: 1; /* 每个天气信息块平均分配空间 */
+            margin: 0 10px; /* 左右间距 */
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="page">
+        <div class="weibo_container">
+            <div class="weibo_title">微博实时热搜</div>
+            <div class="weibo_title">(置顶)今天也很爱小蕊</div>
+            <div class="hot_list">
+                <ul id="hot_word"></ul>
+                <ul id="hot_word_num"></ul>
+            </div>
+        </div>
+
+        <div class="time_container">
+            <div id="apm"></div>
+            <div class="time" id="time">00:00</div>
+            <div class="date" id="date">1月1日 星期一</div>
+        </div>
+
+        <!-- 新增天气包裹容器 -->
+        <div class="weather-wrapper">
+            <div class="weather_container">
+                <p id="weaTitle"></p>
+                <div id="weaImg"></div>
+                <div id="weaTemp"></div>
+                <div id="weaInfo"></div>
+            </div>
+        </div>
+    </div>
+    <div class="weibo_title">小陈</div>
+
+    <script>
+        let lightMode = true;
+
+        // 创建 XMLHttpRequest 对象
+        function createXHR() {
+            let xhr = null;
+            if (window.XMLHttpRequest) {
+                xhr = new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            return xhr;
+        }
+
+        // 微博热搜模块
+        function weibo() {
+            const xhr = createXHR();
+            xhr.open("GET", "https://v2.alapi.cn/api/new/wbtop?token=0ZusqMQ3kvylUDgu&num=5", true);
+            xhr.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    const data = JSON.parse(this.responseText);
+                    const hots = data.data;
+                    const hot_word = document.getElementById("hot_word");
+                    const hot_word_num = document.getElementById("hot_word_num");
+                    hot_word.innerHTML = "";
+                    hot_word_num.innerHTML = "";
+                    for (let i = 0; i < hots.length; i++) {
+                        const index = i + 1;
+                        hot_word.innerHTML += `<li>${index}. ${hots[i].hot_word}</li>`;
+                        hot_word_num.innerHTML += `<li>${hots[i].hot_word_num}</li>`;
+                    }
+                }
+            };
+            xhr.send(null);
+        }
+
+        weibo();
+        setInterval(weibo, 60 * 1000 * 5);
+
+        // 时钟模块
+        function clock() {
+            const date = new Date();
+            const utc8DiffMinutes = date.getTimezoneOffset() + 480;
+            date.setMinutes(date.getMinutes() + utc8DiffMinutes);
+
+            const hour = date.getHours();
+
+            // 20 点后 6 点前启用深色模式
+            if (hour > 19 || hour < 6) {
+                if (lightMode) {
+                    const page = document.querySelector('.page');
+                    page.style.color = '#ffffff';
+                    page.style.backgroundColor = '#000000';
+                    lightMode = false;
+                }
+            } else {
+                if (!lightMode) {
+                    const page = document.querySelector('.page');
+                    page.style.color = '#000000';
+                    page.style.backgroundColor = '#ffffff';
+                    lightMode = true;
+                }
+            }
+
+            let apm = "上<br>午";
+            if (hour > 12) {
+                apm = "下<br>午";
+                hour -= 12;
+            }
+
+            const timeString = `${hour}:${String(date.getMinutes()).padStart(2, '0')}`;
+            const dateString = `${date.getMonth() + 1}月${date.getDate()}日`;
+            const weekList = ["日", "一", "二", "三", "四", "五", "六"];
+            const weekString = `星期${weekList[date.getDay()]}`;
+
+            document.getElementById("apm").innerHTML = apm;
+            document.getElementById("time").innerHTML = timeString;
+            document.getElementById("date").innerHTML = `${dateString} ${weekString}`;
+        }
+
+        clock();
+        setInterval(clock, 60 * 1000);
+
+        // 天气模块
+        function getWea() {
+            const weather_url = 'https://devapi.qweather.com/v7/weather/3d?location=101280805&key=4f91caaf307a4c088530da0f727cf238';
+            const xhr = createXHR();
+            xhr.open('GET', weather_url, true);
+            xhr.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    const weather_data = JSON.parse(this.responseText);
+                    let daily_weather_info = '';
+                    const dailyList = weather_data.daily || [];
+                    dailyList.forEach(daily => {
+                        const fxDate = daily.fxDate || '未知日期';
+                        const tempMax = daily.tempMax || '未知';
+                        const tempMin = daily.tempMin || '未知';
+                        const textDay = daily.textDay || '未知';
+                        const humidity = daily.humidity || '未知';
+                        daily_weather_info += `
+                            <div class="weather-day">
+                                <p>日期: ${fxDate}</p>
+                                <p>最高温度: ${tempMax}℃</p>
+                                <p>最低温度: ${tempMin}℃</p>
+                                <p>相对湿度: ${humidity}</p>
+                                <p>天气状况: ${textDay}</p>
+                            </div>
+                        `;
+                    });
+
+                    document.getElementById("weaTitle").innerHTML = '未来三天天气情况';
+                    document.getElementById("weaInfo").innerHTML = daily_weather_info;
+                }
+            };
+            xhr.send(null);
+        }
+
+        getWea();
+        setInterval(getWea, 60 * 1000 * 20);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,208 @@
+/* 设置基础字体大小，后续使用 rem 单位 */
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  min-height: 100vh;
+  color: #ffffff;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-image: url('IMG123.jpg');
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.weibo_container {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.weibo_title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.hot_list {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#hot_word,
+#hot_word_num {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#hot_word {
+  width: 70%;
+  text-align: left;
+}
+
+#hot_word_num {
+  width: 30%;
+  text-align: right;
+}
+
+.time_container {
+  width: 100%;
+  text-align: center;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+#apm {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  font-weight: 800;
+  z-index: 1;
+}
+
+.time {
+  font-size: 3rem;
+  font-weight: bold;
+  padding-left: 3rem;
+}
+
+.date {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.weather-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.weather_container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.weather-day {
+  margin: 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  min-width: 200px;
+}
+
+#weaTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  text-align: center;
+}
+
+#weaImg {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.tempNum {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.symbol {
+  font-size: 1.5rem;
+}
+
+#weaInfo {
+  font-size: 0.9rem;
+}
+
+/* 小屏幕设备（手机） */
+@media (max-width: 767px) {
+  html {
+      font-size: 12px;
+  }
+
+ .hot_list {
+      flex-direction: column;
+  }
+
+  #hot_word,
+  #hot_word_num {
+      width: 100%;
+      text-align: left;
+  }
+
+  #apm {
+      font-size: 1.2rem;
+  }
+
+ .time {
+      font-size: 2rem;
+      padding-left: 2rem;
+  }
+
+ .date {
+      font-size: 1rem;
+  }
+
+  #weaTitle {
+      font-size: 1rem;
+  }
+
+  #weaImg {
+      font-size: 1.5rem;
+  }
+
+ .tempNum {
+      font-size: 1.5rem;
+  }
+
+ .symbol {
+      font-size: 1rem;
+  }
+
+  #weaInfo {
+      font-size: 0.8rem;
+  }
+
+.weather-day {
+      min-width: 150px;
+  }
+}
+
+/* 中等屏幕设备（平板） */
+@media (min-width: 768px) and (max-width: 991px) {
+  html {
+      font-size: 14px;
+  }
+
+ .time {
+      font-size: 2.5rem;
+  }
+}
+
+/* 大屏幕设备（桌面） */
+@media (min-width: 992px) {
+  /* 可根据需要进一步调整样式 */
+}
