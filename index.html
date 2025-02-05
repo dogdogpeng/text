@@ -3,18 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
     <title>信息仪表盘</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
     <div class="dashboard">
         <!-- 微博热搜 -->
         <div class="weibo-panel">
-            <h2>微博实时热搜</h2>
-            <div class="sticky-title">(置顶)今天也很爱小蕊</div>
-            <ul class="hot-list" id="weiboHot"></ul>
+            <h3>微博热搜</h3>
+            <div class="hotsearch-content">
+                <div class="sticky-title">(置顶)今天也很爱小蕊</div>
+                <ul class="hot-list" id="weiboHot"></ul>
+            </div>
         </div>
 
         <!-- 时间显示 -->
@@ -28,8 +30,10 @@
 
         <!-- 天气信息 -->
         <div class="weather-panel">
-            <h3>未来三天天气</h3>
-            <div id="weather"></div>
+            <div class="weather-content">
+                <h3>未来三天天气</h3>
+                <div id="weather"></div>
+            </div>
         </div>
     </div>
 

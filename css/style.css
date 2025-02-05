@@ -247,52 +247,61 @@ body {
 
 .dashboard {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-auto-rows: minmax(200px, auto);
     gap: 20px;
     padding: 20px;
+    align-items: start;
 }
 
+/* 定义各面板的布局优先级 */
 .weibo-panel {
+    grid-column: span 1;
+    order: 1;
     background: var(--bg-dark);
     color: var(--text-light);
     border-radius: 12px;
     padding: 20px;
     max-width: 400px;
+    overflow: hidden;
 }
 
 .time-panel {
-    background: var(--bg-dark);
-    color: var(--text-light);
-    border-radius: 12px;
-    padding: 30px;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 30vw;  /* 占据视口宽度的60% */
-    height: 40vh; /* 占据视口高度的40% */
-    min-width: 400px;
-    min-height: 300px;
+    bottom: 2vh;
+    right: 2vw;
+    width: 30vw;
+    height: 30vh;
+    min-width: 300px;
+    min-height: 200px;
+    max-width: 90vw;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
+    padding: 2vmin;
+    box-sizing: border-box;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    border-radius: 12px;
     backdrop-filter: blur(10px);
 }
 
 #time {
-    font-size: 6rem;
-}
-
-#date {
-    font-size: 2.5rem;
-    letter-spacing: 0.5px;
-    margin: 1rem 0 auto;
-    width: 100%;
+    font-size: clamp(3rem, 5vw, 8rem);
+    line-height: 0.9;
     text-align: center;
 }
 
+#date {
+    font-size: clamp(1rem, 1.5vw, 2rem);
+    margin-top: 1vh;
+}
+
 .weather-panel {
+    grid-column: span 1;
+    order: 2;
     background: var(--bg-dark);
     color: var(--text-light);
     border-radius: 12px;
@@ -300,6 +309,7 @@ body {
     position: fixed;
     bottom: 20px;
     left: 20px;
+    overflow: visible; /* 确保可见 */
 }
 
 .hot-list {
@@ -311,46 +321,61 @@ body {
     margin: 10px 0;
     display: flex;
     justify-content: space-between;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-/* 新增响应式设计 */
+/* 智能响应式调整 */
+@media (max-width: 1200px) {
+    .time-panel {
+        grid-column: span 1;
+    }
+}
+
 @media (max-width: 768px) {
     .dashboard {
         grid-template-columns: 1fr;
     }
     
     .time-panel {
-        width: 90vw;
-        height: 30vh;
+        position: relative;
+        width: 100%;
+        height: auto;
         min-width: unset;
-        min-height: 200px;
-        right: 5vw;
-        padding: 20px;
-    }
-    
-    #time {
-        margin-top: 0;
-        font-size: 4.5rem;
-        letter-spacing: -3px;
-    }
-    
-    #date {
-        margin: 1rem 0 0;
-        font-size: 1.5rem;
+        bottom: auto;
+        right: auto;
+        margin: 10px 0;
     }
     
     .weather-panel {
-        position: static;
-        margin: 10px;
+        order: 3;
+    }
+}
+
+/* 横屏优化 */
+@media (orientation: landscape) and (max-height: 600px) {
+    .dashboard {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-auto-rows: minmax(150px, auto);
     }
     
-    .period-indicator {
-        font-size: 1.2rem;
-        margin-right: 1rem;
+    .time-panel {
+        min-height: 80vh;
+    }
+}
+
+/* 超大屏幕优化 */
+@media (min-width: 1600px) {
+    .dashboard {
+        grid-template-columns: repeat(3, 1fr);
     }
     
-    .digital-clock {
-        padding-left: 1.5rem;
+    .time-panel {
+        grid-column: span 1;
     }
 }
 
@@ -366,4 +391,125 @@ body {
 /* 确保移除浏览器默认的AM/PM显示 */
 .time-panel ::after {
     content: none !important;
+}
+
+/* 新增横屏适配 */
+@media (max-width: 768px) and (orientation: landscape) {
+    .dashboard {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 10px;
+    }
+
+    .time-panel {
+        grid-column: 2 / 3;
+        grid-row: 1 / 3;
+        height: calc(100vh - 40px);
+        min-height: unset;
+    }
+
+    .weibo-panel {
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .weather-panel {
+        grid-column: 1 / 2;
+        grid-row: 2 / 3;
+        max-height: 30vh;
+    }
+
+    /* 调整时间显示 */
+    #time {
+        font-size: 3.5rem;
+    }
+
+    #date {
+        font-size: 1.1rem;
+    }
+
+    /* 隐藏竖排指示 */
+    .period-indicator {
+        writing-mode: horizontal-tb;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* 小尺寸横屏优化 */
+@media (max-width: 600px) and (orientation: landscape) {
+    #time {
+        font-size: 2.8rem;
+    }
+    
+    .weather-details {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 新增内容约束容器 */
+.weather-content {
+    display: grid;
+    gap: 15px;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 60vh;
+    padding-right: 5px; /* 滚动条占位 */
+}
+
+/* 天气卡片尺寸约束 */
+.weather-day {
+    min-width: 250px;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .weather-content {
+        max-height: 40vh;
+    }
+    
+    .weather-day {
+        min-width: 100%;
+    }
+}
+
+/* 新增热搜内容容器 */
+.hotsearch-content {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .hotsearch-content {
+        max-height: 50vh;
+    }
+    
+    .hot-list li {
+        font-size: 0.9rem;
+    }
+}
+
+/* 统一面板样式 */
+.weibo-panel,
+.time-panel,
+.weather-panel {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    border-radius: 12px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+/* 确保所有文字继承颜色 */
+#time,
+#date,
+.period-indicator {
+    color: inherit;
 }
