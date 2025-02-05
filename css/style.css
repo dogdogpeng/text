@@ -3,10 +3,19 @@ html {
   font-size: 16px;
 }
 
+:root {
+    --text-light: #fff;
+    --text-dark: #333;
+    --bg-light: rgba(255,255,255,0.9);
+    --bg-dark: rgba(0,0,0,0.8);
+}
+
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Microsoft YaHei', sans-serif;
+  min-height: 100vh;
+  background: url('IMG123.jpg') center/cover fixed;
 }
 
 .page {
@@ -205,4 +214,63 @@ body {
 /* 大屏幕设备（桌面） */
 @media (min-width: 992px) {
   /* 可根据需要进一步调整样式 */
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    padding: 20px;
+}
+
+.weibo-panel {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 400px;
+}
+
+.time-panel {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    border-radius: 12px;
+    padding: 20px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.weather-panel {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    border-radius: 12px;
+    padding: 20px;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+}
+
+.hot-list {
+    list-style: none;
+    padding: 0;
+}
+
+.hot-list li {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 新增响应式设计 */
+@media (max-width: 768px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+    
+    .time-panel,
+    .weather-panel {
+        position: static;
+        margin: 10px;
+    }
 }

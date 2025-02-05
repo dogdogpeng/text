@@ -5,70 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>信息仪表盘</title>
-    <style>
-        :root {
-            --text-light: #fff;
-            --text-dark: #333;
-            --bg-light: rgba(255,255,255,0.9);
-            --bg-dark: rgba(0,0,0,0.8);
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Microsoft YaHei', sans-serif;
-            min-height: 100vh;
-            background: url('IMG123.jpg') center/cover fixed;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        /* 微博面板 */
-        .weibo-panel {
-            background: var(--bg-dark);
-            color: var(--text-light);
-            border-radius: 12px;
-            padding: 20px;
-            max-width: 400px;
-        }
-
-        /* 时间面板 */
-        .time-panel {
-            background: var(--bg-dark);
-            color: var(--text-light);
-            border-radius: 12px;
-            padding: 20px;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-        }
-
-        /* 天气面板 */
-        .weather-panel {
-            background: var(--bg-dark);
-            color: var(--text-light);
-            border-radius: 12px;
-            padding: 20px;
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-        }
-
-        /* 热搜列表 */
-        .hot-list {
-            list-style: none;
-            padding: 0;
-        }
-        .hot-list li {
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
