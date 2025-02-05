@@ -46,7 +46,8 @@
                 WEIBO: 300000,
                 WEATHER: 1200000,
                 CLOCK: 1000
-            }
+            },
+            HITOKOTO_API: 'https://international.v1.hitokoto.cn?c=j&c=a&encode=json'
         };
 
         // 初始化
@@ -55,6 +56,7 @@
             setInterval(updateClock, CONFIG.UPDATE_INTERVAL.CLOCK);
             fetchWeibo();
             fetchWeather();
+            fetchHitokoto();
         }
 
         // 获取微博数据
@@ -79,6 +81,21 @@
                 console.error('天气数据获取失败:', error);
             }
             setTimeout(fetchWeather, CONFIG.UPDATE_INTERVAL.WEATHER);
+        }
+
+        // 获取一言数据
+        async function fetchHitokoto() {
+            try {
+                const response = await fetch(CONFIG.HITOKOTO_API);
+                const data = await response.json();
+                renderHitokoto({
+                    text: data.hitokoto,
+                    author: data.from_who || '未知',
+                    source: data.from || '网络'
+                });
+            } catch (error) {
+                console.error('获取一言失败:', error);
+            }
         }
 
         // 渲染微博
@@ -144,6 +161,18 @@
                 weekday: 'long'
             });
         }
+
+        // 新增渲染函数
+        function renderHitokoto(data) {
+            const container = document.createElement('div');
+            container.className = 'hitokoto-container';
+            container.innerHTML = `
+                <p class="hitokoto-text">${data.text}</p>
+                <p class="hitokoto-author">—— ${data.author}《${data.source}》</p>
+            `;
+            document.querySelector('.time-panel').appendChild(container);
+        }
+
         // 启动应用
         init();
     </script>

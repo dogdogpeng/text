@@ -273,7 +273,7 @@ body {
     width: 30vw;
     height: 30vh;
     min-width: 300px;
-    min-height: 200px;
+    min-height: 35vh;
     max-width: 90vw;
     max-height: 90vh;
     display: flex;
@@ -512,4 +512,40 @@ body {
 #date,
 .period-indicator {
     color: inherit;
+}
+
+.hitokoto-container {
+    margin-top: auto;
+    padding: 15px 0 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
+}
+
+.hitokoto-text {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin: 0 0 8px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.hitokoto-author {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    text-align: right;
+    margin: 0;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .hitokoto-text {
+        font-size: 1rem;
+        -webkit-line-clamp: 2;
+    }
+    
+    .hitokoto-author {
+        font-size: 0.8rem;
+    }
 }
