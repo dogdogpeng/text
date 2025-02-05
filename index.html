@@ -30,9 +30,26 @@
 
         <!-- 天气信息 -->
         <div class="weather-panel">
+            <h3 id="weaTitle">今日天气</h3>
             <div class="weather-content">
-                <h3>未来三天天气</h3>
-                <div id="weather"></div>
+                <div class="weather-day">
+                    <div class="weather-info">
+                        <p class="condition">晴</p>
+                        <div class="temp-range">
+                            <span>18℃ ~ 28℃</span>
+                        </div>
+                    </div>
+                    <div class="weather-details">
+                        <div class="detail-item">
+                            <span class="icon">💧</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="icon">🌬️</span>
+                            <span>3级</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -40,7 +57,7 @@
     <script>
         // 配置项
         const CONFIG = {
-            WEIBO_API: 'https://v2.alapi.cn/api/new/wbtop?token=0ZusqMQ3kvylUDgu&num=5',
+           WEIBO_API: 'https://v2.alapi.cn/api/new/wbtop?token=0ZusqMQ3kvylUDgu&num=5',
             WEATHER_API: 'https://devapi.qweather.com/v7/weather/3d?location=101280805&key=4f91caaf307a4c088530da0f727cf238',
             UPDATE_INTERVAL: {
                 WEIBO: 300000,
@@ -110,48 +127,68 @@
         }
 
         // 渲染天气
-        // 修改renderWeather函数
-        function renderWeather(forecast) {
-            const container = document.getElementById('weather');
-            container.innerHTML = forecast.slice(0, 3).map(day => `
-        <div class="weather-day">
-            <p class="date">${day.fxDate}</p>
-            <div class="weather-info">
-                <span class="condition">${day.textDay}</span>
-                <span class="temp-range">${day.tempMin}℃ ~ ${day.tempMax}℃</span>
-            </div>
-            <div class="weather-details">
-                <div class="detail-item">
-                    <span class="icon">💧</span>
-                    <span>${day.humidity}%</span>
-                </div>
-                <div class="detail-item">
-                    <span class="icon">🌧️</span>
-                    <span>${day.precip}%</span>
-                </div>
-            </div>
-        </div>
-    `).join('');
+        function renderWeather(dailyData) {
+            try {
+                const container = document.createElement('div');
+                container.className = 'weather-content';
+
+                // 取前三天的预报
+                dailyData.slice(0, 3).forEach(day => {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'weather-day';
+                    dayElement.innerHTML = `
+                        <div class="weather-info">
+                            <p class="condition">${day.textDay}</p>
+                            <div class="temp-range">
+                                <span>${day.tempMin}℃ ~ ${day.tempMax}℃</span>
+                            </div>
+                        </div>
+                        <div class="weather-details">
+                            <div class="detail-item">
+                                <span class="icon">🌧️</span>
+                                <span>${day.precip}%</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="icon">💧</span>
+                                <span>${day.humidity}℃</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="icon">🌡️</span>
+                                <span>${day.tempMax}℃</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="icon">🧊🌡️</span>
+                                <span>${day.tempMin}℃</span>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(dayElement);
+                });
+
+                const weatherPanel = document.querySelector('.weather-panel');
+                weatherPanel.innerHTML = '<h3 id="weaTitle">三日预报</h3>';
+                weatherPanel.appendChild(container);
+
+            } catch (error) {
+                console.error('天气渲染失败:', error);
+            }
         }
 
         // 更新时钟
-        // 修正时钟更新函数
         function updateClock() {
             const now = new Date();
-            const hours = now.getHours();
-
-            // 修正上午/下午判断逻辑
-            const period = hours >= 12 ? '下午' : '上午';
-            document.getElementById('period').textContent = period;
-
-            // 修正时间格式（强制12小时制）
-            const timeString = now.toLocaleTimeString('zh-CN', {
+            const timeStr = now.toLocaleTimeString('zh-CN', {
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: true
-            }).replace('AM', '').replace('PM', ''); // 移除自动添加的AM/PM
+            }).replace(/[^0-9:]/g, ''); // 移除非数字和冒号字符
 
-            document.getElementById('time').innerHTML = timeString.replace(':', '<span class="time-colon">:</span>');
+            // 手动添加标准化时间段
+            const period = now.getHours() >= 12 ? '早上' : '晚上';
+            const finalTime = `${timeStr}`;
+
+            document.getElementById('period').textContent = period;
+            document.getElementById('time').innerHTML = finalTime.replace(':', '<span class="time-colon">:</span>');
 
             // 保持日期更新
             document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', {
