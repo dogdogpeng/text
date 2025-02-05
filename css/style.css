@@ -69,27 +69,28 @@ body {
   text-align: right;
 }
 
-.time_container {
-  width: 100%;
-  text-align: center;
+.time-container {
+  display: flex;
+  align-items: center;
   position: relative;
-  margin-bottom: 1rem;
+  min-height: 120px;
 }
 
-#apm {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
+.period-indicator {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  margin-left: 1rem;
   font-size: 1.5rem;
-  font-weight: 800;
-  z-index: 1;
+  line-height: 1.3;
+}
+
+.digital-clock {
+  position: relative;
+  padding-left: 2rem;
 }
 
 .time {
-  font-size: 3rem;
-  font-weight: bold;
-  padding-left: 3rem;
+  font-size: 6rem;
 }
 
 .date {
@@ -280,14 +281,7 @@ body {
 }
 
 #time {
-    font-size: 8rem;
-    font-weight: 500;
-    line-height: 0.9;
-    letter-spacing: -5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    width: 100%;
-    text-align: center;
-    margin-top: auto;
+    font-size: 6rem;
 }
 
 #date {
@@ -349,4 +343,27 @@ body {
         position: static;
         margin: 10px;
     }
+    
+    .period-indicator {
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+    
+    .digital-clock {
+        padding-left: 1.5rem;
+    }
+}
+
+.time-colon {
+    animation: blink 1s step-end infinite;
+    opacity: 0.8;
+}
+
+@keyframes blink {
+    50% { opacity: 0.2; }
+}
+
+/* 确保移除浏览器默认的AM/PM显示 */
+.time-panel ::after {
+    content: none !important;
 }

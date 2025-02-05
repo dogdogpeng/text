@@ -19,7 +19,10 @@
 
         <!-- 时间显示 -->
         <div class="time-panel">
-            <div id="time"></div>
+            <div class="time-container">
+                <span id="period" class="period-indicator"></span>
+                <div id="time"></div>
+            </div>
             <div id="date"></div>
         </div>
 
@@ -111,19 +114,32 @@
         }
 
         // 更新时钟
+        // 修正时钟更新函数
         function updateClock() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-            const dateString = now.toLocaleDateString('zh-CN', {
+            const hours = now.getHours();
+
+            // 修正上午/下午判断逻辑
+            const period = hours >= 12 ? '下午' : '上午';
+            document.getElementById('period').textContent = period;
+
+            // 修正时间格式（强制12小时制）
+            const timeString = now.toLocaleTimeString('zh-CN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            }).replace('AM', '').replace('PM', ''); // 移除自动添加的AM/PM
+
+            document.getElementById('time').innerHTML = timeString.replace(':', '<span class="time-colon">:</span>');
+
+            // 保持日期更新
+            document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', {
+                year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 weekday: 'long'
             });
-
-            document.getElementById('time').textContent = timeString;
-            document.getElementById('date').textContent = dateString;
         }
-
         // 启动应用
         init();
     </script>
