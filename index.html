@@ -10,26 +10,17 @@
 
 <body>
     <div class="dashboard">
-        <!-- 微博热搜 -->
-        <div class="weibo-panel">
-            <h3>微博热搜</h3>
-            <div class="hotsearch-content">
-                <div class="sticky-title">(置顶)今天也很爱小蕊</div>
-                <ul class="hot-list" id="weiboHot"></ul>
-            </div>
-        </div>
-
-        <!-- 时间显示 -->
-        <div class="time-panel">
+        <div class="panel time-panel">
             <div class="time-container">
-                <span id="period" class="period-indicator"></span>
-                <div id="time"></div>
+                <label class="time-header">时间</label>
+                <output id="currentTime" class="time-display">18:24:35</output>
             </div>
-            <div id="date"></div>
+            <div class="date-container">
+                <label class="date-header">日期</label>
+                <output id="currentDate" class="date-display">2024年1月1日 星期一</output>
+            </div>
         </div>
-
-        <!-- 天气信息 -->
-        <div class="weather-panel">
+        <div class="panel weather-panel">
             <h3 id="weaTitle">今日天气</h3>
             <div class="weather-content">
                 <div class="weather-day">
@@ -52,7 +43,20 @@
                 </div>
             </div>
         </div>
+        <div class="panel weibo-panel">
+            <h3>微博热搜</h3>
+            <div class="hotsearch-content">
+                <div class="sticky-title">(置顶)今天也很爱小蕊</div>
+                <ul class="hot-list" id="weiboHot"></ul>
+            </div>
+        </div>
+        <div class="panel music-panel">
+            <!-- 音乐面板内容 -->
+        </div>
     </div>
+
+    <!-- 添加加载指示器 -->
+    <div id="loading" class="loading-indicator"></div>
 
     <script>
         // 配置项
@@ -66,6 +70,23 @@
             },
             HITOKOTO_API: 'https://international.v1.hitokoto.cn?c=j&c=a&encode=json'
         };
+
+        // 添加缓存机制
+        const elementCache = new Map();
+
+        function getElement(id) {
+            if (elementCache.has(id)) {
+                return elementCache.get(id);
+            }
+            
+            const el = document.getElementById(id);
+            if (!el) {
+                throw new Error(`元素 ${id} 未找到`);
+            }
+            
+            elementCache.set(id, el);
+            return el;
+        }
 
         // 初始化
         function init() {
@@ -177,26 +198,35 @@
         // 更新时钟
         function updateClock() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('zh-CN', {
+            
+            // 获取基础时间
+            const options = {
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: true
-            }).replace(/[^0-9:]/g, ''); // 移除非数字和冒号字符
+            };
+            let timeStr = now.toLocaleTimeString('zh-CN', options);
 
-            // 手动添加标准化时间段
-            const period = now.getHours() >= 12 ? '早上' : '晚上';
-            const finalTime = `${timeStr}`;
+            // 提取时间段并处理格式
+            const periodMatch = timeStr.match(/^([^\d]+)/);
+            const period = periodMatch ? periodMatch[0] : '';
+            timeStr = timeStr.replace(/[^\d:]/g, '').replace(':', '<span class="time-colon">:</span>');
 
-            document.getElementById('period').textContent = period;
-            document.getElementById('time').innerHTML = finalTime.replace(':', '<span class="time-colon">:</span>');
+            // 组合最终显示
+            document.getElementById('currentTime').innerHTML = `
+                <span class="time-period">${period}</span>
+                ${timeStr}
+            `;
 
             // 保持日期更新
-            document.getElementById('date').textContent = now.toLocaleDateString('zh-CN', {
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('zh-CN', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 weekday: 'long'
             });
+
+            console.log('currentTime元素:', document.getElementById('currentTime'));
         }
 
         // 新增渲染函数
@@ -210,8 +240,47 @@
             document.querySelector('.time-panel').appendChild(container);
         }
 
+        // 懒加载实现
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const panel = entry.target;
+                    // 示例：微博内容懒加载
+                    if (panel.classList.contains('weibo-panel') && !panel.dataset.loaded) {
+                        loadWeiboContent();
+                        panel.dataset.loaded = true;
+                    }
+                    // 其他模块类似处理
+                }
+            });
+        }, { rootMargin: '100px' });
+
+        // 观察所有面板
+        document.querySelectorAll('.panel').forEach(panel => {
+            observer.observe(panel);
+        });
+
+        // 显示加载状态
+        function toggleLoading(show) {
+            const loader = document.getElementById('loading');
+            loader.style.display = show ? 'block' : 'none';
+        }
+
+        // 修改原有加载函数
+        async function loadWeiboContent() {
+            toggleLoading(true);
+            try {
+                // 原有加载逻辑...
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
         // 启动应用
         init();
+
+        // 检查是否有JS动态修改样式
+        document.getElementById('currentTime').style.fontSize = '5rem';
     </script>
 </body>
 
