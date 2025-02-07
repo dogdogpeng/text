@@ -767,7 +767,7 @@ body {
 
 /* 单独调整时间显示 */
 .time-display {
-    font-size: 4rem;          /* 主字号 */
+    font-size: min(6rem, 15vw);
     font-weight: 300;         /* 细体更显大 */
     letter-spacing: -1px;     /* 紧凑字距 */
     line-height: 1;           /* 紧凑行高 */
@@ -967,4 +967,101 @@ body {
 /* 紧凑布局 */
 .forecast-date {
     min-width: 60px;  /* 固定日期宽度 */
+}
+
+/* 新增搜索相关样式 */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#playlistSearch {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid #4a4a4a;
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.search-results {
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.playlist-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+    gap: 15px;
+}
+
+.playlist-item:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.playlist-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.playlist-item .info h4 {
+    margin: 0 0 5px;
+    font-size: 14px;
+}
+
+.playlist-item .info p {
+    margin: 0;
+    font-size: 12px;
+    color: #888;
+}
+
+/* 优化前 */
+.album-cover {
+    animation: rotate 20s linear infinite;
+}
+
+/* 优化后：使用硬件加速 */
+.album-cover {
+    transform: translateZ(0);
+    animation: rotate 20s linear infinite paused; 
+}
+
+/* 控制动画状态 */
+.album-cover.playing {
+    animation-play-state: running;
+}
+
+/* 统一卡片样式 */
+.weather-panel, .music-panel {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+/* 统一标题样式 */
+.weather-header h3, .music-header h3 {
+    font-size: 1.1rem;
+    color: #4CAF50;
+    margin-bottom: 0.8rem;
+}
+
+/* 统一按钮样式 */
+.weather-refresh, .play-button {
+    background: #4CAF50;
+    border: none;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
 }

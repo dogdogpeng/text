@@ -51,7 +51,15 @@
             </div>
         </div>
         <div class="panel music-panel">
-            <!-- 音乐面板内容 -->
+            <h3>音乐播放</h3>
+            <div class="music-controls">
+                <div class="search-box">
+                    <input type="text" id="playlistSearch" placeholder="输入歌单名称">
+                    <button onclick="searchPlaylist()">搜索</button>
+                </div>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+            <div class="music-player" id="neteasePlayer"></div>
         </div>
     </div>
 
@@ -68,7 +76,9 @@
                 WEATHER: 1200000,
                 CLOCK: 1000
             },
-            HITOKOTO_API: 'https://international.v1.hitokoto.cn?c=j&c=a&encode=json'
+            HITOKOTO_API: 'https://international.v1.hitokoto.cn?c=j&c=a&encode=json',
+            NETEASE_SEARCH_API: 'https://netease-cloud-music-api-liart-mu.vercel.app/cloudsearch?keywords=', // 需要自行部署代理
+            NETEASE_PLAYLIST: 'https://music.163.com/outchain/player?type=0&id='
         };
 
         // 添加缓存机制
@@ -213,20 +223,20 @@
             timeStr = timeStr.replace(/[^\d:]/g, '').replace(':', '<span class="time-colon">:</span>');
 
             // 组合最终显示
-            document.getElementById('currentTime').innerHTML = `
+            getElement('currentTime').innerHTML = `
                 <span class="time-period">${period}</span>
                 ${timeStr}
             `;
 
             // 保持日期更新
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('zh-CN', {
+            getElement('currentDate').textContent = now.toLocaleDateString('zh-CN', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 weekday: 'long'
             });
 
-            console.log('currentTime元素:', document.getElementById('currentTime'));
+            console.log('currentTime元素:', getElement('currentTime'));
         }
 
         // 新增渲染函数
@@ -276,11 +286,92 @@
             }
         }
 
+        // 新增搜索函数
+        async function searchPlaylist() {
+            const keyword = document.getElementById('playlistSearch').value;
+            if (!keyword) return alert('请输入搜索关键词');
+
+            try {
+                const response = await fetch(`${CONFIG.NETEASE_SEARCH_API}${encodeURIComponent(keyword)}&type=1000`);
+                const data = await response.json();
+                showSearchResults(data.result.playlists);
+            } catch (error) {
+                console.error('搜索失败:', error);
+                alert('搜索失败，请检查网络或代理设置');
+            }
+        }
+
+        // 显示搜索结果
+        function showSearchResults(playlists) {
+            const container = document.getElementById('searchResults');
+            container.innerHTML = playlists.map(playlist => `
+                <div class="playlist-item" data-id="${playlist.id}">
+                    <img src="${playlist.coverImgUrl}?param=60y60" >
+                    <div class="info">
+                        <h4>${playlist.name}</h4>
+                        <p>${playlist.trackCount}首 · by ${playlist.creator.nickname}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // 添加点击事件
+            document.querySelectorAll('.playlist-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    loadPlaylist(item.dataset.id);
+                });
+            });
+        }
+
+        // 修改后的加载函数
+        function loadPlaylist(playlistId) {
+            if (!/^\d+$/.test(playlistId)) return alert('无效的歌单ID');
+            
+            const container = document.getElementById('neteasePlayer');
+            container.innerHTML = `
+                <iframe 
+                    width="100%" 
+                    height="400" 
+                    frameborder="no" 
+                    scrolling="no"
+                    src="${CONFIG.NETEASE_PLAYLIST}${playlistId}&auto=0&height=380"
+                    allow="autoplay">
+                </iframe>
+            `;
+            document.getElementById('searchResults').innerHTML = '';
+        }
+
         // 启动应用
         init();
 
         // 检查是否有JS动态修改样式
-        document.getElementById('currentTime').style.fontSize = '5rem';
+        getElement('currentTime').style.fontSize = '5rem';
+
+        // 使用节流处理
+        const analyzeAudio = throttle((analyser) => {
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+            // ...处理数据...
+        }, 100);
+
+        function throttle(fn, delay) {
+            let last = 0;
+            return (...args) => {
+                const now = Date.now();
+                if (now - last >= delay) {
+                    fn(...args);
+                    last = now;
+                }
+            }
+        }
+
+        const audioWorker = new Worker('audio-processor.js');
+        audioWorker.postMessage(audioBuffer);
+
+        // 使用Three.js等WebGL库
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#visualization'),
+            alpha: true
+        });
     </script>
 </body>
 
